@@ -1,0 +1,144 @@
+IDENTIFICATION DIVISION.                          
+ PROGRAM-ID. PROG3.                                
+ ENVIRONMENT DIVISION.                             
+ INPUT-OUTPUT SECTION.                             
+ FILE-CONTROL.                                     
+     SELECT REPORT-FILE ASSIGN TO REPFILE          
+     ORGANIZATION IS SEQUENTIAL                    
+     ACCESS MODE IS SEQUENTIAL                     
+     FILE STATUS IS REP-STAT.                      
+ DATA DIVISION.                                    
+ FILE SECTION.                                     
+ FD  REPORT-FILE                                   
+     RECORD CONTAINS 80 CHARACTERS                 
+     RECORDING MODE IS F.                          
+ 01  REPORT-RECORD                    PIC X(80).   
+ WORKING-STORAGE SECTION.                          
+01  WS-EMP-ID                        PIC X(05) VALUE SPACES.           
+     88 END-OF-RECORD                           VALUE 'XXXXX'.          
+     EXEC SQL                                                           
+           INCLUDE EMPLOYEE                                             
+     END-EXEC.                                                          
+     EXEC SQL                                                           
+           INCLUDE LOCATION                                             
+     END-EXEC.                                                          
+     EXEC SQL                                                           
+           INCLUDE SQLCA                                                
+     END-EXEC.                                                          
+ 01  WS-LOC                           PIC X(03) VALUE SPACES.           
+     88 END-OF-REC                              VALUE 'XXX'.            
+     EXEC SQL                                                           
+          DECLARE EMP_CUR CURSOR FOR                                    
+          SELECT EMP_ID, EMP_NAME, EMP_TECH, EMP_EARN, EMP_DEDN         
+          FROM T09_EMPLOYEE_TABLE                                  
+          WHERE EMP_LOC = :WS-LOC                                  
+     END-EXEC.                                                     
+ 01  HEADING-LINE.                                                 
+     03 FILLER             PIC X(01) VALUE SPACES.                 
+     03 FILLER             PIC X(05) VALUE 'ID'.                   
+     03 FILLER             PIC X(18) VALUE 'EMP NAME'.             
+     03 FILLER             PIC X(08) VALUE 'TECH'.                 
+     03 FILLER             PIC X(11) VALUE 'EARNINGS'.             
+     03 FILLER             PIC X(11) VALUE 'DEDUCTIONS'.           
+     03 FILLER             PIC X(10) VALUE 'TOTAL SAL'.            
+ 01  PRINT-LINE.                                                   
+     03 FILLER             PIC X(01) VALUE SPACES.                 
+     03 P-ID               PIC X(05) VALUE SPACES.                 
+     03 P-MESSAGE.                                                 
+       05 FILLER             PIC X(01) VALUE SPACES.               
+       05 P-NAME             PIC X(15) VALUE SPACES.               
+       05 FILLER             PIC X(01) VALUE SPACES.              
+       05 FILLER             PIC X(01) VALUE SPACES.              
+       05 FILLER             PIC X(01) VALUE SPACES.              
+       05 P-TECH             PIC X(05) VALUE SPACES.              
+       05 FILLER             PIC X(01) VALUE SPACES.              
+     03 P-AMOUNT.                                                 
+       05 P-EARN             PIC ZZZ,ZZ9.99 VALUE ZERO.           
+       05 FILLER             PIC X(01) VALUE SPACES.              
+       05 P-DEDN             PIC ZZZ,ZZ9.99 VALUE ZERO.           
+       05 FILLER             PIC X(01) VALUE SPACES.              
+       05 P-SAL              PIC ZZZ,ZZ9.99 VALUE ZERO.           
+ 01 WS-TAB-FLAG          PIC X(01)   VALUE 'N'.                   
+     88  END-OF-ROWS                   VALUE 'Y'.                 
+ 01 WS-EMP-FLAG          PIC X(01)   VALUE 'N'.                   
+     88  END-OF-FILE                   VALUE 'Y'.                 
+ 01  REP-STAT              PIC X(02).                             
+     88  OPEN-SUCCESS                  VALUE '00'.              
+ 01 REP-FLAG               PIC X(02)   VALUE 'N'.               
+     88  OPEN-SUCCESS                  VALUE '10'.              
+ 01 WS-SAL                 PIC 9(06)V99 VALUE ZERO.             
+ 01 WS-SQLCODE             PIC -9(3)   VALUE ZERO.              
+ 01 WS-NULL-VAR.                                                
+     03 TECH-IND           PIC S9(4) COMP VALUE ZERO.           
+     03 EARN-IND           PIC S9(4) COMP VALUE ZERO.           
+     03 DEDN-IND           PIC S9(4) COMP VALUE ZERO.           
+     03 EMP-NAME-IND       PIC S9(4) COMP VALUE ZERO.           
+     03 LOC-NAME-IND       PIC S9(4) COMP VALUE ZERO.           
+ PROCEDURE DIVISION.                                            
+ MAIN-PARA.                                                     
+     PERFORM INIT-PARA                                          
+     PERFORM PROCESS-PARA UNTIL END-OF-ROWS                     
+     PERFORM END-PARA.                                          
+    STOP RUN.                                                   
+INIT-PARA.                                                      
+    OPEN OUTPUT REPORT-FILE                                     
+    ACCEPT WS-LOC.                                              
+     EXEC SQL                                                   
+         OPEN EMP_CUR                                           
+     END-EXEC                                                   
+    WRITE REPORT-RECORD FROM HEADING-LINE.                      
+PROCESS-PARA.                                                   
+        EXEC SQL                                                
+         FETCH EMP_CUR INTO                                     
+         :EMP-ID, :EMP-NAME, :EMP-TECH, :EMP-EARN, :EMP-DEDN    
+        END-EXEC                                                
+     MOVE SQLCODE TO WS-SQLCODE                                 
+      DISPLAY 'SELECT SQL = ', SQLCODE, '-', WS-LOC             
+    EVALUATE SQLCODE                                            
+      WHEN ZERO                                               
+          DISPLAY 'OPEN SUCCESS', P-MESSAGE                   
+          PERFORM MOVE-PARA                                   
+          WRITE REPORT-RECORD FROM PRINT-LINE                 
+      WHEN 100                                                
+           MOVE 'Y' TO WS-TAB-FLAG                            
+           MOVE SPACES TO P-MESSAGE, P-AMOUNT                 
+           DISPLAY 'NO MORE ROWS TO FETCH', P-MESSAGE         
+      WHEN OTHER                                              
+           DISPLAY 'ERROR READING EMPLOYEE-TABLE'             
+     END-EVALUATE.                                            
+     ACCEPT WS-LOC.                                           
+ MOVE-PARA.                                                   
+     MOVE EMP-ID        TO P-ID.                              
+     MOVE EMP-NAME-TEXT(1:EMP-NAME-LEN) TO P-NAME.            
+     MOVE EMP-TECH-TEXT(1:EMP-TECH-LEN) TO P-TECH.            
+    MOVE EMP-EARN      TO P-EARN OF PRINT-LINE.     
+    MOVE EMP-DEDN      TO P-DEDN OF PRINT-LINE.     
+    COMPUTE WS-SAL = EMP-EARN - EMP-DEDN            
+    MOVE WS-SAL        TO P-SAL OF PRINT-LINE.      
+END-PARA.                                           
+     EXEC SQL                                       
+         CLOSE EMP_CUR                              
+     END-EXEC.                                      
+     DISPLAY 'CLOSE SUCCESS', P-MESSAGE, P-AMOUNT   
+     CLOSE REPORT-FILE.                             
+     STOP RUN.                                      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

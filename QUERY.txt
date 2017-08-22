@@ -1,0 +1,142 @@
+SELECT
+
+SELECT * FROM T17_EMPLOYEE_TABLE;
+SELECT * FROM T17_LOCATION_TABLE;
+
+SELECT MIN(EMP_EARN) AS MIN_EARN,
+       MAX(EMP_EARN) AS MAX_EARN,
+       MIN(EMP_DEDN) AS MIN_DEDN,
+       MAX(EMP_DEDN) AS MAX_DEDN,
+       SUM(EMP_EARN) AS TOT_EARN,
+       SUM(EMP_DEDN) AS TOT_DEDN 
+FROM T17_EMPLOYEE_TABLE;   
+
+SELECT EMP_LOC, COUNT(*)              
+FROM T17_EMPLOYEE_TABLE               
+GROUP BY EMP_LOC HAVING COUNT(*) < 3; 
+      
+
+
+SELECT EMP_LOC, EMP_TECH, COUNT(*) AS TOTAL_ROWS  
+ FROM T17_EMPLOYEE_TABLE                          
+ GROUP BY EMP_LOC, EMP_TECH;                      
+
+
+SELECT COUNT(*) AS TOTAL_ROWS 
+ FROM T17_EMPLOYEE_TABLE;     
+
+
+SELECT DISTINCT EMP_TECH FROM T17_EMPLOYEE_TABLE;
+SELECT DISTINCT EMP_ID  FROM T17_EMPLOYEE_TABLE; 
+
+
+SELECT * FROM T17_EMPLOYEE_TABLE   
+WHERE EMP_LOC IN ('CHN', 'BGL') OR 
+      EMP_TECH IN ('.NET', 'JAVA');
+
+SELECT * FROM T17_EMPLOYEE_TABLE  
+WHERE EMP_LOC LIKE 'C%';          
+
+SELECT * FROM T17_EMPLOYEE_TABLE  
+WHERE EMP_LOC IN   ('__N', 'CHE');
+
+
+
+--                                   
+  SELECT * FROM T17_LOCATION_TABLE;  
+  SELECT * FROM T17_EMPLOYEE_TABLE;  
+--                                   
+  SELECT CURRENT DATE AS CUR_DATE,   
+         CURRENT TIME AS CUR_TIME,   
+         CURRENT TIMESTAMP AS CUR_TS 
+  FROM SYSIBM.SYSDUMMY1;             
+
+
+  SELECT * FROM T17_LOCATION_TABLE;                     
+  SELECT * FROM T17_EMPLOYEE_TABLE;                     
+--                                                      
+  SELECT EMP_ID, E1.LAST_NAME, E1.EMP_ID, E2.LAST_NAME  
+   AS MGR_NAME FROM T17_EMPLOYEE_WORKER E1,             
+                    T17_EMPLOYEE_WORKER E2              
+   WHERE E1.MGR_ID = E2.EMP_ID                          
+   ORDER BY E1.EMP_ID;                                  
+--                                                      
+   SELECT EMP_ID, EMP_NAME, LOC_NAME, EMP_DOB, EMP_TECH,
+          EMP_EARN, EMP_DEDN                            
+    FROM T17_EMPLOYEE_TABLE,                            
+         T17_LOCATION_TABLE                             
+    WHERE EMP_LOC = LOC_ID;                             
+
+ SELECT .EMP_ID, E1.LAST_NAME, E1.MAN_ID, E2.LAST_NAME 
+  AS MGR_NAME FROM T17_EMPLOYEE_WORKER E1,             
+                   T17_EMPLOYEE_WORKER E2              
+  WHERE E1.MGR_ID = E2.EMP_ID                          
+  ORDER BY E1.EMP_ID;                                  
+
+
+
+
+
+
+INSERT
+
+
+
+
+
+
+
+UPDATE
+
+ SELECT * FROM T17_EMPLOYEE_TABLE;   
+ UPDATE T17_EMPLOYEE_TABLE           
+ SET EMP_EARN = EMP_EARN + 1000,     
+     EMP_DEDN = ( 10/100) * EMP_EARN 
+ SELECT * FROM T17_EMPLOYEE_TABLE;   
+
+
+SELECT * FROM T17_EMPLOYEE_TABLE; 
+ UPDATE T17_EMPLOYEE_TABLE        
+ SET EMP_EARN = EMP_EARN + 1000,  
+     EMP_DEDN = EMP_DEDN + 100    
+ WHERE EMP_LOC = 'PUN';           
+ SELECT * FROM T17_EMPLOYEE_TABLE;
+
+
+
+CREATE
+
+DROP   TABLE T17_EMPLOYEE_TABLE; 
+CREATE TABLE T17_EMPLOYEE_TABLE  
+ (EMP_ID     CHAR(5),            
+  EMP_LOC    CHAR(3),            
+  EMP_DESN   CHAR(2),            
+  EMP_EARN   DECIMAL(7,2),       
+  EMP_DEDN   DECIMAL(7,2))       
+  IN PATNIDB1.PATNITS1;          
+
+
+--                                                         
+--DROP TABLE T17_LOCATION_TABLE;                           
+  COMMIT;                                                  
+  CREATE TABLE T17_LOCATION_TABLE                          
+  (LOC)ID       CHAR(3) NOT NULL PRIMARY KEY,              
+   LOC_NAME     CHAR(15))                                  
+   IN PATNIDB1.PATNITS1;                                   
+  CREATE UNIQUE INDEX LOCIDX ON T17_LOCATION_TABLE(LOC_ID);
+
+
+DROP   TABLE T17_EMPLOYEE_TABLE;                                 
+COMMIT;                                                          
+CREATE TABLE T17_EMPLOYEE_TABLE                                  
+ (EMP_ID     CHAR(5) NOT NULL PRIMARY KEY,                       
+  EMP_NAME   CHAR(15),                                           
+  EMP_LOC    CHAR(3),                                            
+  EMP_DOB    DATE,                                               
+  EMP_TECH   CHAR(5),                                            
+  EMP_EARN   DECIMAL(7,2),                                       
+  EMP_DEDN   DECIMAL(7,2),                                       
+  FOREIGN KEY(EMP_LOC) REFERENCES T17_LOCATION_TABLE(LOC_ID))    
+  IN PATNIDB1.PATNITS1;                                          
+  CREATE UNIQUE INDEX EMPIDX ON T17_EMPLOYEE_TABLE (EMP_ID);     
+

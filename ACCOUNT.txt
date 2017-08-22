@@ -1,0 +1,84 @@
+   INSERT INTO T17_ACCOUNT_TABLE                                   
+    (ACC_NO, CUST_NAME, OPN_DATE, ACC_BAL, ACC_STAT)               
+    VALUES('10101', 'CUSROMER 01', '2000-01-01', 100000, 'A');     
+ --                                                                
+   INSERT INTO T17_ACCOUNT_TABLE                                   
+    VALUES('20202', 'CUSROMER 02', '2000-02-02', 200000, 'I');     
+ --                                                                
+   INSERT INTO T17_ACCOUNT_TABLE                                   
+    VALUES('30303', 'CUSROMER 03', '2000-03-03', 300000, 'A');     
+ --                                                                
+   INSERT INTO T17_ACCOUNT_TABLE                                   
+    VALUES('40404', 'CUSROMER 04', '2000-04-04', 400000, 'I');     
+ --                                                                
+   INSERT INTO T17_ACCOUNT_TABLE                                   
+    VALUES('50505', 'CUSROMER 05', '2000-05-05', 500000, 'A');     
+ --                                                                
+   INSERT INTO T17_TRANSACTION_TABLE                        
+    (TRAN_NO, TRANS_DATE, TRAN_AMT,  TRAN_TYPE, ACC_NO)     
+    VALUES('10001', '2005-01-01', 1000, 'C', 10101);        
+ --                                                         
+   INSERT INTO T17_TRANSACTION_TABLE                        
+    VALUES('20002', '2005-02-02', 2000, 'W', 20202);        
+ --                                                         
+   INSERT INTO T17_TRANSACTION_TABLE                        
+    VALUES('30003', '2005-03-03', 3000, 'C', 30303);        
+ --                                                         
+   INSERT INTO T17_TRANSACTION_TABLE                        
+    VALUES('40004', '2005-04-04', 4000, 'W', 40404);        
+ --                                                         
+   INSERT INTO T17_TRANSACTION_TABLE                        
+    VALUES('50005', '2005-05-05', 5000, 'C', 50505);        
+
+
+ --DROP TABLE T17_ACCOUNT_TABLE;                                    
+ --COMMIT;                                                          
+   CREATE TABLE T17_ACCOUNT_TABLE                                   
+    (ACC_NO       CHAR(05) NOT NULL PRIMARY KEY,                    
+     CUST_NAME    CHAR(15),                                         
+     OPN_DATE     DATE,                                             
+     ACC_BAL      DECIMAL(8,2),                                     
+     ACC_STAT     CHAR(1))                                          
+     IN PATNIDB1.PATNITS1;                                          
+     CREATE UNIQUE INDEX ACCNOX ON T17_ACCOUNT_TABLE(ACC_NO);       
+ --                                                                 
+ --DROP TABLE T17_TRANSACTION_TABLE;                                
+ --COMMIT;                                                          
+   CREATE TABLE T17_TRANSACTION_TABLE                               
+    (TRNS_NO      CHAR(05) NOT NULL PRIMARY KEY,                    
+     TRNS_DATE    DATE,                                             
+ TRNS_AMT     DECIMAL(8,2),                                      
+ TRNS_BAL     DECIMAL(8,2),                                      
+ TRNS_TYPE    CHAR(1))                                           
+ IN PATNIDB1.PATNITS1;                                           
+ CREATE UNIQUE INDEX TRNSNOX ON T17_TRANSACTION_TABLE(TRNS_NO);  
+
+
+
+
+
+1) Create an Account Table with following Columns -
+- Account No = SMALLINT    Primary Key
+- Customer Name = VARCHAR(25)
+- Opening Date = DATE
+- Account Bal = DECIMAL(10,2)
+- Account Status = CHAR(1)
+
+2) Insert Rows into the Account Table
+
+3) Create a Transaction with following Columns -
+- Trans No = SMALLINT      Primary Key
+- Trans Date = DATE
+- Trans Amount = DECIMAL(10,2)
+- Trans Balance = DECIMAL(10,2)
+- Trans Type = CHAR(1)
+- Account No = SMALLINT    Foreign Key
+
+4) Insert Rows into the Transaction Table
+
+Note = For Data, refer to Data Files from COBOL ReTest
+
+Queries = Write a SQL to print
+1) All Active Account Nos with the Count of Transactions
+2) All Active Account Nos with their Current Balance
+
